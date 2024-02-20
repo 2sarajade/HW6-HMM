@@ -1,6 +1,7 @@
 import pytest
 from hmm import HiddenMarkovModel
 import numpy as np
+from hmmlearn import hmm as imported_hmm
 
 
 
@@ -22,14 +23,16 @@ def test_mini_weather():
     mini_hmm=np.load('./data/mini_weather_hmm.npz')
     mini_input=np.load('./data/mini_weather_sequences.npz')
 
+    hmm = HiddenMarkovModel(mini_hmm["observation_states"], mini_hmm["hidden_states"], mini_hmm["prior_p"], mini_hmm["transition_p"], mini_hmm["emission_p"])
+    #real_hmm = imported_hmm.GaussianHMM()
 
+    score = hmm.forward(mini_input["observation_state_sequence"])
+    sequence = hmm.viterbi(mini_input["observation_state_sequence"])
+    correct_sequence = mini_input["best_hidden_state_sequence"]
 
-
-
-
+    assert abs(score - 0.0350644116) < .000001
+    assert np.array_equal(sequence, correct_sequence)
     
-   
-    pass
 
 
 
@@ -45,6 +48,17 @@ def test_full_weather():
 
     """
 
+    full_hmm=np.load('./data/full_weather_hmm.npz')
+    full_input=np.load('./data/full_weather_sequences.npz')
+
+    hmm = HiddenMarkovModel(full_hmm["observation_states"], full_hmm["hidden_states"], full_hmm["prior_p"], full_hmm["transition_p"], full_hmm["emission_p"])
+    score = hmm.forward(full_input["observation_state_sequence"])
+    sequence = hmm.viterbi(full_input["observation_state_sequence"])
+    correct_sequence = full_input["best_hidden_state_sequence"]
+
+    assert np.array_equal(sequence, correct_sequence)
+
+    #assert False
     pass
 
 
