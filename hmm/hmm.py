@@ -27,6 +27,11 @@ class HiddenMarkovModel:
         self.transition_p = transition_p
         self.emission_p = emission_p
 
+        if self.prior_p.shape != self.hidden_states.shape:
+            raise ValueError("priors and states do not match")
+        if abs(sum(self.prior_p) - 1) > .00000000001:
+            raise ValueError("priors are not scaled properly")
+        
 
     def forward(self, input_observation_states: np.ndarray) -> float:
         """
@@ -98,15 +103,13 @@ class HiddenMarkovModel:
                 viterbi_table[i,j] = max_prob *  self.emission_p[j,obs]
                 backpointer_table[i, j] = np.argmax([viterbi_table[i-1][prev_state] * self.transition_p[prev_state][j] for prev_state in range(num_states)])
 
-
-        print(backpointer_table)
         # Step 3. Traceback 
         best_path_pointer = np.argmax(viterbi_table[-1])
         best_path = [best_path_pointer]
         for t in range(num_obs -1, 0, -1):
             best_path.insert(0, backpointer_table[t, best_path[0]])
 
-        translated_best_path = [self.hidden_states[index] for index in best_path]
+        translated_best_path = [self.hidden_states_dict.get(index) for index in best_path]
 
 
         # Step 4. Return best hidden state sequence 

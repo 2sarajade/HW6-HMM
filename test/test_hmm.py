@@ -1,7 +1,6 @@
 import pytest
 from hmm import HiddenMarkovModel
 import numpy as np
-from hmmlearn import hmm as imported_hmm
 
 
 
@@ -24,7 +23,6 @@ def test_mini_weather():
     mini_input=np.load('./data/mini_weather_sequences.npz')
 
     hmm = HiddenMarkovModel(mini_hmm["observation_states"], mini_hmm["hidden_states"], mini_hmm["prior_p"], mini_hmm["transition_p"], mini_hmm["emission_p"])
-    #real_hmm = imported_hmm.GaussianHMM()
 
     score = hmm.forward(mini_input["observation_state_sequence"])
     sequence = hmm.viterbi(mini_input["observation_state_sequence"])
@@ -32,8 +30,15 @@ def test_mini_weather():
 
     assert abs(score - 0.0350644116) < .000001
     assert np.array_equal(sequence, correct_sequence)
-    
 
+    #test errors
+    with pytest.raises(ValueError) as err :
+        hmm2 = HiddenMarkovModel(mini_hmm["observation_states"], mini_hmm["hidden_states"], np.array([1]), mini_hmm["transition_p"], mini_hmm["emission_p"])
+    assert str(err.value) == "priors and states do not match"
+    
+    with pytest.raises(ValueError) as err :
+        hmm3 = HiddenMarkovModel(mini_hmm["observation_states"], mini_hmm["hidden_states"], np.array([1,2]), mini_hmm["transition_p"], mini_hmm["emission_p"])
+    assert str(err.value) == "priors are not scaled properly"
 
 
 def test_full_weather():
@@ -58,8 +63,6 @@ def test_full_weather():
 
     assert np.array_equal(sequence, correct_sequence)
 
-    #assert False
-    pass
 
 
 
