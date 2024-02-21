@@ -1,3 +1,6 @@
+![BuildStatus](https://github.com/2sarajade/HW6-HMM/actions/workflows/main.yml/badge.svg?event=push)
+This code implements the Forward and Viterbi Algorithms with dynamic programming. It builds a table of probablilities, keeping track of which previous value was used to calculate each entry. After the table is completed, it backtraces through the table to generate the most likely sequence of hidden states (viterbi) or sums the probabilities in the final row (forward).
+
 # HW6-HMM
 
 In this assignment, you'll implement the Forward and Viterbi Algorithms (dynamic programming). 
